@@ -27,5 +27,5 @@
 module load mathematica
 
 # Run Mathematica script
-WolframKernel -wstp -linkprotocol TCPIP -linkname "25565,25575"
+WolframKernel -wstp -linkprotocol TCPIP -linkname "25565,25575" -initfile remoteKernelInit.wl
 exit

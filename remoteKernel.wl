@@ -10,6 +10,7 @@ PortIn = "25565";
 PortOut = "25575";
 ClusterAdresse = "campuscluster.illinois.edu";
 ToAdresse[port_String, name_String, adresse_String] := StringJoin[port,"@", name, ".", adresse];
+LastResult = Null;
 
 
 End[]
@@ -22,15 +23,24 @@ ConnectToKernel[name_String] := (link = LinkConnect[StringJoin[RemoteKernel`Priv
 
 
 KillKernel::usage = "stop the kernel and close the link"
-
-
 KillKernel[lk_LinkObject] := (LinkWrite[lk, Unevaluated[Quit[]]]; LinkClose[lk])
 
 
-LinkReadQ::usage = "see if there is an answer and get it if there is"
+LinkReadQ::usage = "see if there is an answer awaiting and get it if there is, return the last result otherwise"
+LinkReadQ[lk_LinkObject] := If[LinkReadyQ[lk], RemoteKernel`Private`LastResult = LinkRead[lk]; {True, RemoteKernel`Private`LastResult}, {False, RemoteKernel`Private`LastResult}]
 
 
-LinkReadQ[lk_LinkObject] := If[LinkReadyQ[lk], {True, LinkRead[lk]}, {False, Null}]
+LinkReadH::usage = "work like LinkRead, but store the result for LinkReadQ"
+LinkReadH[lk_LinkObject] := (RemoteKernel`Private`LastResult = LinkRead[lk]; RemoteKernel`Private`LastResult)
 
+
+GetLastRead::usage = "return the last read respond from LinkReadQ or LinkReadH"
+GetLastRead[lk_LinkObject] := RemoteKernel`Private`LastResult
+
+Define::usage = "Same as Set[] (_ = _) but only work for the remote kernel"
+
+Define::usage = "Same as Set[] (_ = _) but only work for the remote kernel"
+
+DefineDefer::usage = "Same as SetDefer[] (_ := _) but only work for the remote kernel"
 
 EndPackage[]
